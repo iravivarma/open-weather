@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  api:
+    build: 
+          context: ../deployment
+          dockerfile: Dockerfile
+    container_name: web-app
+    entrypoint: python app.py
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - '8000:8000'
+    depends_on:
+      - postgresdb
+    networks:
+      - weather_project
+  
+  postgresdb:
+    image: postgres:latest
+    container_name: db-container
+    environment:
+      POSTGRES_USER: weatheruser
+      POSTGRES_PASSWORD: qwerty
+      POSTGRES_DB: weatherdb
+    ports:
+      - "6379:6379"
+    depends_on:
+      - api
+    networks:
+      - weather_project
+
+networks:
+  weather_project:
